@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE5 Landscape テキストブック: Chapter 2 - Grass Quick Start</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #16a34a;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #334155;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            color: #475569;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .info-box .label {
+            font-weight: bold;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .warning-box {
+            background-color: #fff7ed;
+            border-left: 4px solid #f97316;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .warning-box .label {
+            font-weight: bold;
+            color: #ea580c;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+            background-color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .flow-diagram {
+            background-color: #1e293b;
+            color: #94a3b8;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 2;
+            margin: 20px 0;
+        }
+
+        .flow-diagram .highlight {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .step-badge {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .tips {
+            background-color: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .tips h3 {
+            margin-top: 0;
+            color: #c2410c;
+        }
+
+        .tips ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        ol.steps {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        ol.steps li {
+            padding: 8px 0 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        ol.steps li:last-child {
+            border-bottom: none;
+        }
+
+        a {
+            color: var(--primary-color);
+        }
+
+        .version-badge {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #15803d;
+            border-radius: 4px;
+            padding: 2px 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        hr {
+            margin: 40px 0;
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>UE5 Landscape テキストブック: Chapter 2<br>
+            <span style="font-size: 0.6em; color: #64748b;">Grass Quick Start（草の自動配置）</span>
+            <span class="version-badge">UE 5.7</span>
+        </h1>
+
+        <p>この章では、<strong>Landscape Grass System</strong> を使って、ランドスケープ上に草などの植生を自動的に配置する方法を学びます。手動でFoliageを配置するのではなく、マテリアルのペイントレイヤーに連動して草が<strong>プロシージャルに生成される</strong>仕組みを習得します。</p>
+
+        <div class="warning-box">
+            <span class="label">⚠️ 重要な制約</span>
+            Grass System は <strong>Landscape Terrain Actor にのみ対応</strong>しています。他のActorタイプには使用できません。
+        </div>
+
+        <h2>システムの概要</h2>
+
+        <div class="flow-diagram">
+            <span class="highlight">Landscape Material</span><br>
+            &nbsp;&nbsp;↓ Landscape Grass Output ノード<br>
+            <span class="highlight">Landscape Grass Type アセット</span>（草のメッシュ・密度・カリング設定）<br>
+            &nbsp;&nbsp;↓<br>
+            <span class="highlight">HISM</span>（Hierarchical Instanced Static Mesh）として動的にスポーン
+        </div>
+
+        <hr>
+
+        <!-- STEP 1 -->
+        <h2><span class="step-badge">1</span>レベルとランドスケープの作成</h2>
+
+        <div class="card">
+            <ol class="steps">
+                <li>新規レベルを作成（<strong>Blank テンプレート</strong>を使用）</li>
+                <li>Modes から <strong>Landscape</strong> を選択してLandscapeパネルを表示</li>
+                <li><strong>Create</strong> ボタンをクリックしてランドスケープを生成</li>
+                <li>（推奨）<strong>Noise</strong> ツールで起伏を追加して草の見栄えを向上させる</li>
+            </ol>
+        </div>
+
+        <h3>Noise ツールの適用方法</h3>
+        <table>
+            <tr><th>操作</th><th>内容</th></tr>
+            <tr><td>Sculpt タブ → Noise</td><td>ノイズツールを選択</td></tr>
+            <tr><td>ブラシをLandscape全体に広げる</td><td>ビューポートでブラシサイズを拡大</td></tr>
+            <tr><td>左クリック × 3〜4回</td><td>自然な起伏を追加</td></tr>
+        </table>
+
+        <hr>
+
+        <!-- STEP 2 -->
+        <h2><span class="step-badge">2</span>Landscape マテリアルの作成</h2>
+
+        <p>Content Browser で右クリック → <strong>Material &amp; Textures → Material</strong> を選択し、<code>MAT_GT_Grass</code> と命名します。</p>
+
+        <h3>必要なノード一覧</h3>
+        <table>
+            <tr><th>ノード名</th><th>役割</th></tr>
+            <tr><td><strong>Landscape Layer Blend</strong></td><td>複数テクスチャ（草・岩など）をレイヤーでブレンド</td></tr>
+            <tr><td><strong>Landscape Layer Sample</strong></td><td>ペイントされたレイヤー値を取得</td></tr>
+            <tr><td><strong>Landscape Grass Output</strong></td><td>草の自動スポーンを駆動する重要ノード</td></tr>
+            <tr><td><strong>Landscape Layer Coords</strong></td><td>テクスチャのタイリング制御</td></tr>
+        </table>
+
+        <h3>ノード接続の手順</h3>
+        <div class="card">
+            <ol class="steps">
+                <li><strong>Landscape Layer Coords</strong> を追加し、すべてのテクスチャのUV入力に接続（統一タイリング）</li>
+                <li><strong>Landscape Layer Blend</strong> を追加し、Details パネルの Layers に <code>Grass</code> と <code>Rock</code> の2つを追加（+ アイコンを2回）</li>
+                <li>各テクスチャを対応するLayer入力に接続</li>
+                <li>Layer Blend の出力を <strong>Base Color</strong> に接続</li>
+                <li><strong>Landscape Grass Output</strong> ノードを追加（Step 4 で詳細設定）</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <span class="label">💡 Height Blend（任意・推奨）</span>
+            岩や土のレイヤーにリアルな境界を出すには、Landscape Layer Blend の Details パネルでそれらのレイヤータイプを <code>Weight Blend</code> から <strong>Height Blend</strong> に変更する。
+        </div>
+
+        <hr>
+
+        <!-- STEP 3 -->
+        <h2><span class="step-badge">3</span>Landscape Grass Type アセットの作成</h2>
+
+        <p>Landscape Grass Type は、草のメッシュ・密度・カリング距離などをまとめた専用アセットです。</p>
+
+        <div class="card">
+            <ol class="steps">
+                <li>Content Browser で右クリック → <strong>Miscellaneous → Landscape Grass Type</strong></li>
+                <li><code>LGT_FieldGrass</code> と命名してダブルクリックで開く</li>
+                <li><strong>Grass Varieties</strong> 配列の <strong>+</strong> アイコンをクリックして要素を追加</li>
+                <li><strong>Grass Mesh</strong> 欄に使用するスタティックメッシュを設定</li>
+            </ol>
+        </div>
+
+        <h3>Grass Variety の主要設定</h3>
+        <table>
+            <tr><th>設定項目</th><th>説明</th><th>推奨値</th></tr>
+            <tr><td><strong>Grass Density</strong></td><td>生成密度</td><td><code>400</code>（作業中は低く設定）</td></tr>
+            <tr><td><strong>Start Cull Distance</strong></td><td>フェードアウト開始距離</td><td>End より小さい値</td></tr>
+            <tr><td><strong>End Cull Distance</strong></td><td>この距離を超えると非表示</td><td><code>4000</code>（約40m）</td></tr>
+            <tr><td><strong>Random Rotation</strong></td><td>ランダムな回転を有効化</td><td>✅ オン</td></tr>
+            <tr><td><strong>Align to Surface</strong></td><td>地形の法線に沿って傾ける</td><td>✅ 草・花・岩はオン / ❌ 木はオフ</td></tr>
+            <tr><td><strong>Scale X/Y/Z Min・Max</strong></td><td>サイズのランダム幅</td><td>プロジェクトに応じて設定</td></tr>
+        </table>
+
+        <div class="tips">
+            <h3>パフォーマンス Tips</h3>
+            <ul>
+                <li><strong>Scale を大きく × Density を低く</strong>: メッシュ数を減らしながら見た目を維持できる。</li>
+                <li>作業中は Density を <code>10〜50</code> に下げておき、完成時に戻すとエディターが快適になる。</li>
+            </ul>
+        </div>
+
+        <hr>
+
+        <!-- STEP 4 -->
+        <h2><span class="step-badge">4</span>マテリアルに Grass Output ノードを接続</h2>
+
+        <div class="card">
+            <ol class="steps">
+                <li><code>MAT_GT_Grass</code> を開く</li>
+                <li><strong>Landscape Grass Output</strong> ノードの Grass Type スロットに <code>LGT_FieldGrass</code> を設定</li>
+                <li><strong>Landscape Layer Sample</strong> ノードを追加し、Parameter Name を <code>Grass</code> に設定</li>
+                <li>Layer Sample の出力を Grass Output の入力に接続</li>
+                <li>マテリアルを <strong>Apply → Save</strong> してコンパイル</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <span class="label">💡 複数の草タイプを追加する場合</span>
+            Grass Output ノードの Details パネルで <strong>+</strong> アイコンをクリックして要素を追加。別の Landscape Grass Type（例: 花用）を割り当てて、対応する Landscape Layer Sample を接続する。
+        </div>
+
+        <hr>
+
+        <!-- STEP 5 -->
+        <h2><span class="step-badge">5</span>ランドスケープへの適用とレイヤーペイント</h2>
+
+        <div class="card">
+            <ol class="steps">
+                <li>ビューポートでランドスケープを選択</li>
+                <li>Details パネルの <strong>Landscape Material</strong> に <code>MAT_GT_Grass</code> を設定</li>
+                <li><strong>Landscape Paint Mode</strong> に切り替え、草レイヤーを選択してペイント</li>
+            </ol>
+        </div>
+
+        <p>ペイントした領域に草が自動でスポーンされます。別のレイヤー（土・岩）をペイントすると草が消え、そのレイヤーに対応する Grass Type が表示されます。</p>
+
+        <hr>
+
+        <!-- STEP 6 -->
+        <h2><span class="step-badge">6</span>スムーズフェードの設定（ポップイン防止）</h2>
+
+        <p>カリング距離で草が突然消えるのを防ぐには、草メッシュ用マテリアルに <code>PerInstanceFadeAmount</code> ノードを使用します。</p>
+
+        <div class="card">
+            <ol class="steps">
+                <li>草メッシュのマテリアルを開く</li>
+                <li><strong>PerInstanceFadeAmount</strong> ノードを追加（0〜1の値を出力）</li>
+                <li><strong>Opacity</strong> 入力に接続してフェードアウトを実現</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <span class="label">ℹ️ 動作条件</span>
+            <strong>Start Cull Distance &lt; End Cull Distance</strong> の設定時に有効化されます。この範囲を超えると <code>PerInstanceFadeAmount</code> が 0〜1 の値を出力し始めます。
+        </div>
+
+        <hr>
+
+        <!-- まとめ -->
+        <h2>最適化設定まとめ</h2>
+
+        <table>
+            <tr><th>設定</th><th>推奨値</th></tr>
+            <tr><td>Grass Density</td><td>~400（作業中は低く設定）</td></tr>
+            <tr><td>End Cull Distance</td><td>4000 UU（40m）</td></tr>
+            <tr><td>Start Cull Distance</td><td>End より小さい値</td></tr>
+            <tr><td>Align to Surface</td><td>草・花はオン、木はオフ</td></tr>
+            <tr><td>Random Rotation</td><td>オン</td></tr>
+            <tr><td>PerInstanceFadeAmount</td><td>使用推奨</td></tr>
+        </table>
+
+        <hr>
+
+        <!-- トラブルシューティング -->
+        <h2>よくある問題</h2>
+
+        <div class="tips">
+            <h3>草が表示されない</h3>
+            <ul>
+                <li>Landscape Grass Output ノードに Landscape Grass Type が正しく設定されているか確認</li>
+                <li>マテリアルが Apply・Save されているか確認</li>
+                <li>Landscape Actor に正しくマテリアルが割り当てられているか確認</li>
+            </ul>
+        </div>
+
+        <div class="tips">
+            <h3>エディターが重くなる・フリーズする</h3>
+            <ul>
+                <li>作業中は <strong>Grass Density を低い値</strong>（例: 10〜50）に下げて作業し、完成時に元の値に戻す</li>
+            </ul>
+        </div>
+
+        <div class="tips">
+            <h3>草が地面に沈む・浮く</h3>
+            <ul>
+                <li><strong>Align to Surface</strong> を有効にする</li>
+                <li>メッシュのピボットポイントが地面に設置されているか確認</li>
+            </ul>
+        </div>
+
+        <hr>
+
+        <h2>参考リンク</h2>
+        <ul>
+            <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/grass-quick-start-in-unreal-engine" target="_blank">Grass Quick Start - UE5.7 公式ドキュメント</a></li>
+            <li><a href="https://wh0.is/posts/a-look-under-the-hood-at-unreal-engine-landscape-grass-en" target="_blank">UE5 Landscape Grass Source Analysis</a></li>
+            <li><a href="https://www.worldofleveldesign.com/categories/ue4/grass-output-node-guide.php" target="_blank">Complete Grass Output Node Guide - World of Level Design</a></li>
+        </ul>
+
+    </div>
+</body>
+</html>

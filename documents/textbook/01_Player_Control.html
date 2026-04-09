@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Game Dev Textbook: Chapter 1 - Player Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --code-bg: #1e1e1e;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #334155;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            color: #475569;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prompt-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 4px;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .prompt-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 5px;
+            font-style: normal;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+        }
+
+        /* PrismJS overrides */
+        pre[class*="language-"] {
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .tips {
+            background-color: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .tips h3 {
+            margin-top: 0;
+            color: #c2410c;
+        }
+        .tips ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Game Dev Textbook: Chapter 1<br><span style="font-size: 0.6em; color: #64748b;">Player Control (プレイヤー操作)</span></h1>
+
+        <p>この章では、AI (Antigravity) を使用して、Unityでプレイヤーキャラクターを操作する機能を実装する方法を学びます。</p>
+
+        <h2>1. 基本的な移動 (Basic Movement)</h2>
+        <p>まずは、プレイヤーを矢印キーやWASDキーでXZ平面上（前後左右）に移動させる基本的な機能を実装します。</p>
+
+        <img src="images/xz_movement.png" alt="XZ Movement Diagram">
+
+        <div class="card">
+            <h3>Antigravityへのプロンプト (Prompt)</h3>
+            <p>AIに依頼する際は、<strong>「何を」「どうやって」「どのような要件で」</strong>作りたいかを明確に伝えます。</p>
+            
+            <div class="prompt-box">
+                <span class="prompt-label">プロンプト例:</span>
+                "Unityで3Dアクションゲームを作っています。プレイヤーキャラクター(`Player.cs`)を矢印キーまたはWASDキーでXZ平面上（前後左右）に移動させるスクリプトを作成してください。移動速度(`speed`)をInspectorから調整できるように `public` 変数にしてください。"
+            </div>
+        </div>
+
+        <h3>重要なソースコード (Key Source Code)</h3>
+        <p>AIが生成するコードの核となる部分は以下の通りです。<code>Input.GetAxis</code> で入力を取得し、<code>transform.Translate</code> で移動させます。</p>
+
+        <pre><code class="language-csharp">using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    [Header("Movement Settings")]
+    public float speed = 5f; // 移動速度
+
+    void Update()
+    {
+        // 入力の取得 (-1.0 から 1.0 の値)
+        float moveX = Input.GetAxis("Horizontal");
+        float moveY = Input.GetAxis("Vertical");
+
+        // 移動ベクトルの作成 (フレームレートに依存しないように Time.deltaTime を掛ける)
+        // 3Dゲームなので、Y軸(高さ)ではなくZ軸(奥行き)にmoveYを適用します
+        Vector3 movement = new Vector3(moveX, 0, moveY) * speed * Time.deltaTime;
+
+        // プレイヤーの位置を更新
+        transform.Translate(movement);
+    }
+}</code></pre>
+
+        <hr style="margin: 40px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+        <h2>2. 移動範囲の制限 (Movement Constraints)</h2>
+        <p>プレイヤーが画面の外に出てしまわないように、移動できる範囲を制限します。</p>
+
+        <img src="images/clamp_constraint.png" alt="Clamp Constraint Diagram">
+
+        <div class="card">
+            <h3>Antigravityへのプロンプト (Prompt)</h3>
+            <p>既存のコードに対して修正を依頼する場合は、<strong>「何を追加したいか」</strong>を具体的に指示します。</p>
+
+            <div class="prompt-box">
+                <span class="prompt-label">プロンプト例:</span>
+                "プレイヤーが画面外に出ないように移動制限を追加したいです。`Mathf.Clamp` を使用して、X座標を -8.5〜8.5、Z座標を -4.5〜4.5 の範囲に収めるように `Update` メソッドを修正してください。"
+            </div>
+        </div>
+
+        <h3>重要なソースコード (Key Source Code)</h3>
+        <p>移動後の位置を計算し、その値を <code>Mathf.Clamp</code> で制限してから <code>transform.position</code> に適用します。</p>
+
+        <pre><code class="language-csharp">    void Update()
+    {
+        float moveX = Input.GetAxis("Horizontal");
+        float moveY = Input.GetAxis("Vertical");
+
+        // 現在の位置に移動量を加えた仮の位置
+        Vector3 newPos = transform.position + (new Vector3(moveX, 0, moveY) * speed * Time.deltaTime);
+
+        // 画面範囲内に制限 (Clamp)
+        newPos.x = Mathf.Clamp(newPos.x, -8.5f, 8.5f);
+        newPos.z = Mathf.Clamp(newPos.z, -4.5f, 4.5f);
+
+        // 制限された位置を適用
+        transform.position = newPos;
+    }</code></pre>
+
+        <div class="tips">
+            <h3>ポイント (Tips)</h3>
+            <ul>
+                <li><strong>Time.deltaTime</strong>: パソコンの性能によってゲームの速度が変わらないようにするために必須です。</li>
+                <li><strong>Mathf.Clamp</strong>: 値を指定した最小値と最大値の間に収める便利な関数です。</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+</body>
+</html>

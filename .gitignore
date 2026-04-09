@@ -1,0 +1,35 @@
+# Claude Code personal settings
+.claude/settings.json
+.claude/commands/
+.claude/.textlintrc.json
+.claude/LICENSE
+.claude/README.md
+.claude/symlinks/
+.claude/tasks.json
+.claude/templates/
+
+# Unreal Engine
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.sln
+*.suo
+*.xcworkspace
+*.xcodeproj
+*.DS_Store
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Plugin Binaries
+Plugins/*/Binaries/
+Plugins/*/Intermediate/

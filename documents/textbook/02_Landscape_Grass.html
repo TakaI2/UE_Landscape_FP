@@ -93,6 +93,21 @@
             margin-bottom: 5px;
         }
 
+        .danger-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .danger-box .label {
+            font-weight: bold;
+            color: #dc2626;
+            display: block;
+            margin-bottom: 5px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -138,9 +153,11 @@
             padding: 20px;
             border-radius: 8px;
             font-family: 'Consolas', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             line-height: 2;
             margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre;
         }
 
         .flow-diagram .highlight {
@@ -160,6 +177,10 @@
             font-weight: bold;
             margin-right: 8px;
             font-size: 0.9rem;
+        }
+
+        .step-badge.zero {
+            background-color: #64748b;
         }
 
         .tips {
@@ -183,11 +204,19 @@
         ol.steps {
             padding-left: 0;
             list-style: none;
+            counter-reset: step-counter;
         }
 
         ol.steps li {
             padding: 8px 0 8px 10px;
             border-bottom: 1px solid #f1f5f9;
+            counter-increment: step-counter;
+        }
+
+        ol.steps li::before {
+            content: counter(step-counter) ". ";
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
         ol.steps li:last-child {
@@ -207,6 +236,30 @@
             font-size: 0.85rem;
             font-weight: 600;
             margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .legacy-badge {
+            display: inline-block;
+            background-color: #fef9c3;
+            color: #854d0e;
+            border-radius: 4px;
+            padding: 1px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .new-badge {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #15803d;
+            border-radius: 4px;
+            padding: 1px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 6px;
             vertical-align: middle;
         }
 
@@ -232,15 +285,55 @@
             Grass System は <strong>Landscape Terrain Actor にのみ対応</strong>しています。他のActorタイプには使用できません。
         </div>
 
+        <!-- UE5.7 変更点 -->
+        <h2>UE5.7 での変更点（重要）</h2>
+
+        <p>UE5.7 では Landscape マテリアルの推奨方式が変わっています。旧方式は <strong>Legacy</strong> 扱いになっています。</p>
+
+        <table>
+            <tr><th>項目</th><th>旧方式 <span class="legacy-badge">Legacy</span></th><th>UE5.7 推奨 <span class="new-badge">推奨</span></th></tr>
+            <tr><td>レイヤーブレンド</td><td><code>Landscape Layer Blend</code></td><td><code>SetMaterialAttributes</code> + <code>BlendMaterialAttributes</code></td></tr>
+            <tr><td>レイヤー識別</td><td>Layer Blend 内で定義</td><td><code>Landscape Layer Sample</code> で定義</td></tr>
+            <tr><td>最適化</td><td>なし</td><td><code>Landscape Layer Switch</code></td></tr>
+            <tr><td>LayerInfo</td><td>Weight-Blend を選択</td><td>デフォルトが Non-Weight-Blend（要設定変更）</td></tr>
+        </table>
+
+        <div class="danger-box">
+            <span class="label">🚫 UE5.7 でペイントが効かない場合</span>
+            Project Settings → <code>Target Layer Default Blend Method</code> を <strong>Weight-Blending</strong> に変更してエディターを再起動する必要があります（Step 4 で詳述）。
+        </div>
+
         <h2>システムの概要</h2>
 
-        <div class="flow-diagram">
-            <span class="highlight">Landscape Material</span><br>
-            &nbsp;&nbsp;↓ Landscape Grass Output ノード<br>
-            <span class="highlight">Landscape Grass Type アセット</span>（草のメッシュ・密度・カリング設定）<br>
-            &nbsp;&nbsp;↓<br>
-            <span class="highlight">HISM</span>（Hierarchical Instanced Static Mesh）として動的にスポーン
+        <div class="flow-diagram"><span class="highlight">Landscape Material</span>
+  ↓ Landscape Layer Sample（レイヤー識別）
+  ↓ BlendMaterialAttributes（レイヤー合成）
+  ↓ Landscape Grass Output ノード
+<span class="highlight">Landscape Grass Type アセット</span>（草のメッシュ・密度・カリング設定）
+  ↓
+<span class="highlight">HISM</span>（Hierarchical Instanced Static Mesh）として動的にスポーン</div>
+
+        <hr>
+
+        <!-- STEP 0 -->
+        <h2><span class="step-badge zero">0</span>草アセットの準備（Fab から入手）</h2>
+
+        <p>草メッシュは <strong>Fab</strong>（旧 Quixel Bridge）から入手できます。</p>
+
+        <div class="card">
+            <ol class="steps">
+                <li>UE Editor で <strong>Window → Fab</strong> を開く</li>
+                <li>草や植生アセットを検索（例: <code>Tundra Grass</code>）</li>
+                <li>ダウンロードしてプロジェクトに追加</li>
+            </ol>
         </div>
+
+        <h3>よくあるエラー</h3>
+        <table>
+            <tr><th>エラー</th><th>原因</th><th>対処</th></tr>
+            <tr><td><code>Asset not available in UAsset format</code></td><td>アセットがUAsset形式に未変換</td><td>fab.com のブラウザから検索する</td></tr>
+            <tr><td><code>Missing Plugin</code></td><td>必要なプラグインが無効</td><td>表示されたプラグインを Enable → エディター再起動</td></tr>
+        </table>
 
         <hr>
 
@@ -252,7 +345,7 @@
                 <li>新規レベルを作成（<strong>Blank テンプレート</strong>を使用）</li>
                 <li>Modes から <strong>Landscape</strong> を選択してLandscapeパネルを表示</li>
                 <li><strong>Create</strong> ボタンをクリックしてランドスケープを生成</li>
-                <li>（推奨）<strong>Noise</strong> ツールで起伏を追加して草の見栄えを向上させる</li>
+                <li>（推奨）Sculpt タブ → <strong>Noise</strong> ツールで自然な起伏を追加</li>
             </ol>
         </div>
 
@@ -267,39 +360,7 @@
         <hr>
 
         <!-- STEP 2 -->
-        <h2><span class="step-badge">2</span>Landscape マテリアルの作成</h2>
-
-        <p>Content Browser で右クリック → <strong>Material &amp; Textures → Material</strong> を選択し、<code>MAT_GT_Grass</code> と命名します。</p>
-
-        <h3>必要なノード一覧</h3>
-        <table>
-            <tr><th>ノード名</th><th>役割</th></tr>
-            <tr><td><strong>Landscape Layer Blend</strong></td><td>複数テクスチャ（草・岩など）をレイヤーでブレンド</td></tr>
-            <tr><td><strong>Landscape Layer Sample</strong></td><td>ペイントされたレイヤー値を取得</td></tr>
-            <tr><td><strong>Landscape Grass Output</strong></td><td>草の自動スポーンを駆動する重要ノード</td></tr>
-            <tr><td><strong>Landscape Layer Coords</strong></td><td>テクスチャのタイリング制御</td></tr>
-        </table>
-
-        <h3>ノード接続の手順</h3>
-        <div class="card">
-            <ol class="steps">
-                <li><strong>Landscape Layer Coords</strong> を追加し、すべてのテクスチャのUV入力に接続（統一タイリング）</li>
-                <li><strong>Landscape Layer Blend</strong> を追加し、Details パネルの Layers に <code>Grass</code> と <code>Rock</code> の2つを追加（+ アイコンを2回）</li>
-                <li>各テクスチャを対応するLayer入力に接続</li>
-                <li>Layer Blend の出力を <strong>Base Color</strong> に接続</li>
-                <li><strong>Landscape Grass Output</strong> ノードを追加（Step 4 で詳細設定）</li>
-            </ol>
-        </div>
-
-        <div class="info-box">
-            <span class="label">💡 Height Blend（任意・推奨）</span>
-            岩や土のレイヤーにリアルな境界を出すには、Landscape Layer Blend の Details パネルでそれらのレイヤータイプを <code>Weight Blend</code> から <strong>Height Blend</strong> に変更する。
-        </div>
-
-        <hr>
-
-        <!-- STEP 3 -->
-        <h2><span class="step-badge">3</span>Landscape Grass Type アセットの作成</h2>
+        <h2><span class="step-badge">2</span>Landscape Grass Type アセットの作成</h2>
 
         <p>Landscape Grass Type は、草のメッシュ・密度・カリング距離などをまとめた専用アセットです。</p>
 
@@ -308,7 +369,7 @@
                 <li>Content Browser で右クリック → <strong>Miscellaneous → Landscape Grass Type</strong></li>
                 <li><code>LGT_FieldGrass</code> と命名してダブルクリックで開く</li>
                 <li><strong>Grass Varieties</strong> 配列の <strong>+</strong> アイコンをクリックして要素を追加</li>
-                <li><strong>Grass Mesh</strong> 欄に使用するスタティックメッシュを設定</li>
+                <li><strong>Grass Mesh</strong> 欄に Step 0 で入手した草メッシュを設定</li>
             </ol>
         </div>
 
@@ -333,22 +394,80 @@
 
         <hr>
 
+        <!-- STEP 3 -->
+        <h2><span class="step-badge">3</span>Landscape マテリアルの作成 <span class="new-badge">UE5.7 推奨方式</span></h2>
+
+        <p>Content Browser で右クリック → <strong>Material</strong> を選択し、<code>MAT_Landscape</code> と命名。ダブルクリックで開いたら、まずメインマテリアルノードの Details パネルで <strong>Use Material Attributes</strong> にチェックを入れる。</p>
+
+        <h3>必要なノード一覧</h3>
+        <table>
+            <tr><th>ノード名</th><th>役割</th></tr>
+            <tr><td><strong>SetMaterialAttributes</strong></td><td>各レイヤーのマテリアル属性（Base Color等）を定義</td></tr>
+            <tr><td><strong>BlendMaterialAttributes</strong></td><td>2つのレイヤーをブレンド</td></tr>
+            <tr><td><strong>Landscape Layer Sample</strong></td><td>ペイントされたレイヤー値（Alpha）を取得・レイヤー名を定義</td></tr>
+            <tr><td><strong>Landscape Layer Switch</strong></td><td>未使用レイヤーをスキップしてパフォーマンス最適化</td></tr>
+            <tr><td><strong>Texture Sample</strong></td><td>テクスチャを読み込む</td></tr>
+            <tr><td><strong>Landscape Grass Output</strong></td><td>草の自動スポーンを駆動</td></tr>
+        </table>
+
+        <h3>Grass レイヤーの接続</h3>
+        <div class="card">
+            <ol class="steps">
+                <li><code>SetMaterialAttributes</code> を追加 → Details の <strong>+</strong> で <code>Base Color</code> を追加</li>
+                <li><code>Texture Sample</code>（草テクスチャ）→ <code>SetMaterialAttributes</code> の <strong>Base Color</strong> に接続</li>
+                <li><code>Landscape Layer Sample</code> を追加 → Parameter Name を <code>Grass</code> に設定</li>
+                <li><code>BlendMaterialAttributes</code> を追加して接続：<code>SetMaterialAttributes</code> → <strong>B</strong>、<code>Landscape Layer Sample</code> → <strong>Alpha</strong></li>
+                <li><code>Landscape Layer Switch</code> を追加 → <code>BlendMaterialAttributes</code> → <strong>Layer Used</strong>、Parameter Name を <code>Grass</code> に設定</li>
+            </ol>
+        </div>
+
+        <h3>Rock レイヤーの接続（同様に構築後、2つを繋げる）</h3>
+        <div class="card">
+            <ol class="steps">
+                <li>Rock 用に同じセットを作成（Parameter Name を <code>Rock</code> に設定）</li>
+                <li>Grass の <code>Landscape Layer Switch</code> 出力 → Rock の <code>BlendMaterialAttributes</code> の <strong>A</strong> ピン</li>
+                <li>Grass の <code>Landscape Layer Switch</code> 出力 → Rock の <code>Landscape Layer Switch</code> の <strong>Layer Not Used</strong> ピン</li>
+                <li>Rock の <code>Landscape Layer Switch</code> 出力 → メインマテリアルノードの <strong>Material Attributes</strong></li>
+            </ol>
+        </div>
+
+        <h3>接続図</h3>
+        <div class="flow-diagram">[TextureSample(Grass)] → [SetMaterialAttributes] ──┐
+[LandscapeLayerSample(Grass)] ──────────────────→ [BlendMaterialAttributes] → [LandscapeLayerSwitch(Grass)] ──┐
+                                                                                                                │(A)
+[TextureSample(Rock)]  → [SetMaterialAttributes] ──┐                                                          │
+[LandscapeLayerSample(Rock)]  ──────────────────→ [BlendMaterialAttributes] → [LandscapeLayerSwitch(Rock)] → Output
+                                                                                LayerNotUsed ←─────────────────┘</div>
+
+        <h3>Landscape Grass Output の追加</h3>
+        <div class="card">
+            <ol class="steps">
+                <li><code>Landscape Grass Output</code> ノードを追加</li>
+                <li>Details パネルで Grass Type に <code>LGT_FieldGrass</code> を設定</li>
+                <li><code>Landscape Layer Sample</code>（Grass）の出力 → <code>Landscape Grass Output</code> の入力に接続</li>
+                <li><strong>Apply → Save</strong> してコンパイル</li>
+            </ol>
+        </div>
+
+        <hr>
+
         <!-- STEP 4 -->
-        <h2><span class="step-badge">4</span>マテリアルに Grass Output ノードを接続</h2>
+        <h2><span class="step-badge">4</span>Project Settings の変更 <span class="legacy-badge">UE5.7 必須</span></h2>
+
+        <p>UE5.7 ではデフォルト設定のままではペイントが機能しません。</p>
 
         <div class="card">
             <ol class="steps">
-                <li><code>MAT_GT_Grass</code> を開く</li>
-                <li><strong>Landscape Grass Output</strong> ノードの Grass Type スロットに <code>LGT_FieldGrass</code> を設定</li>
-                <li><strong>Landscape Layer Sample</strong> ノードを追加し、Parameter Name を <code>Grass</code> に設定</li>
-                <li>Layer Sample の出力を Grass Output の入力に接続</li>
-                <li>マテリアルを <strong>Apply → Save</strong> してコンパイル</li>
+                <li><strong>Edit → Project Settings</strong> を開く</li>
+                <li>検索欄に <code>Target Layer</code> と入力</li>
+                <li><strong>Target Layer Default Blend Method</strong> を <strong>Weight-Blending</strong> に変更</li>
+                <li>エディターを<strong>再起動</strong></li>
             </ol>
         </div>
 
         <div class="info-box">
-            <span class="label">💡 複数の草タイプを追加する場合</span>
-            Grass Output ノードの Details パネルで <strong>+</strong> アイコンをクリックして要素を追加。別の Landscape Grass Type（例: 花用）を割り当てて、対応する Landscape Layer Sample を接続する。
+            <span class="label">ℹ️ 補足</span>
+            Weight-Blending は Legacy 扱いだが、UE5.7 現時点ではペイントを正常に動作させるために必要な設定。
         </div>
 
         <hr>
@@ -359,12 +478,13 @@
         <div class="card">
             <ol class="steps">
                 <li>ビューポートでランドスケープを選択</li>
-                <li>Details パネルの <strong>Landscape Material</strong> に <code>MAT_GT_Grass</code> を設定</li>
-                <li><strong>Landscape Paint Mode</strong> に切り替え、草レイヤーを選択してペイント</li>
+                <li>Details パネルの <strong>Landscape Material</strong> に <code>MAT_Landscape</code> を設定</li>
+                <li><strong>Landscape Paint Mode</strong> に切り替え</li>
+                <li><strong>Populate</strong> ボタンをクリックしてレイヤーを読み込む</li>
+                <li>LayerInfo の保存先を指定して保存</li>
+                <li>レイヤーを選択してペイント → 草が自動でスポーンされる</li>
             </ol>
         </div>
-
-        <p>ペイントした領域に草が自動でスポーンされます。別のレイヤー（土・岩）をペイントすると草が消え、そのレイヤーに対応する Grass Type が表示されます。</p>
 
         <hr>
 
@@ -407,6 +527,13 @@
         <h2>よくある問題</h2>
 
         <div class="tips">
+            <h3>ペイントが効かない / 何も変化しない（UE5.7）</h3>
+            <ul>
+                <li>Project Settings → <code>Target Layer Default Blend Method</code> を <strong>Weight-Blending</strong> に変更してエディター再起動</li>
+            </ul>
+        </div>
+
+        <div class="tips">
             <h3>草が表示されない</h3>
             <ul>
                 <li>Landscape Grass Output ノードに Landscape Grass Type が正しく設定されているか確認</li>
@@ -435,8 +562,8 @@
         <h2>参考リンク</h2>
         <ul>
             <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/grass-quick-start-in-unreal-engine" target="_blank">Grass Quick Start - UE5.7 公式ドキュメント</a></li>
+            <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/landscape-materials-in-unreal-engine" target="_blank">Landscape Materials in UE5.7</a></li>
             <li><a href="https://wh0.is/posts/a-look-under-the-hood-at-unreal-engine-landscape-grass-en" target="_blank">UE5 Landscape Grass Source Analysis</a></li>
-            <li><a href="https://www.worldofleveldesign.com/categories/ue4/grass-output-node-guide.php" target="_blank">Complete Grass Output Node Guide - World of Level Design</a></li>
         </ul>
 
     </div>
